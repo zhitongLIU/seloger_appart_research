@@ -10,10 +10,11 @@ def old_buy_analyze(url)
     title = page.css('h1.detail-title.title1')[0].text.strip.gsub(' ', '')
     square = title[/\ (.*?)m²/, 1].split.last.to_f
     price_per_square = price / square
-    [title, url, price, square, price_per_square]
+    tel = page.css('button.btn-phone.b-btn.b-second.fi.fi-phone.tagClick')[0].attributes.select { |att| att == 'data-phone' }.first.last.value.gsub(' ', '')
+    [title || '', url || '', price || '', square || '', price_per_square || '', "#{tel}" || '']
   rescue => e
     puts "  !!errors: #{e}"
-    [title || '', url || '', price || '', square || '', price_per_square || '']
+    [title || '', url || '', price || '', square || '', price_per_square || '', tel || '']
   end
 end
 
@@ -40,7 +41,7 @@ def export_csv(title, res)
   end
 end
 
-old_buy_res = [['title', 'link', 'price', 'size', 'price per m2']]
+old_buy_res = [['title', 'link', 'price', 'size', 'price per m2', 'tel']]
 new_buy_res = [['title', 'link', 'address', 'date']]
 
 File.open('./in.txt').each do |line|
